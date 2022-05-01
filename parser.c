@@ -82,7 +82,7 @@ Token *parser(const char * file, int *ln){
             tokenlist[tokenlist_index - 1].var_count++;
             tokenlist[tokenlist_index - 1].vars[var_index].type = STRING;
             tokenlist[tokenlist_index - 1].vars[var_index].ptr = str;
-            //printf("added var %d of %s\n", tokenlist[tokenlist_index - 1].var.type, tokenlist[tokenlist_index - 1].name);
+            //printf("added var %d of %s\n", tokenlist[tokenlist_index - 1].vars[var_index].type, tokenlist[tokenlist_index - 1].name);
             continue;
         }
 
@@ -90,8 +90,13 @@ Token *parser(const char * file, int *ln){
         {
             // char* to int
             int multby = 1;
+            int end_index = 0;
+
+            if (word[1] == '-')
+                multby = -1; end_index = 1;
+
             int *number = (int *)malloc(sizeof(int));
-            for (int i = buf_index - 1; i > 0; i--)
+            for (int i = buf_index - 1; i > end_index; i--)
             {
                 *number += multby * (word[i] - '0');
                 multby *= 10;
@@ -149,7 +154,6 @@ Token *parser(const char * file, int *ln){
 
         tokenlist[tokenlist_index].name = word;
         tokenlist_index++;
-        //printf("added token %s\n", token.name);
         
         if (file[file_index] == '\0') // dosyanın sonu
             break;
