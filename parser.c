@@ -23,18 +23,7 @@ Token *parser(const char * file, int *ln){
     char buf[255];
     int buf_index = 0;
 
-    int lines = 0; // her line bir komut diye düşünüyorum
-    while (file[file_index] != '\0')
-    {
-        if (file[file_index] == '\n')
-            lines++;
-        file_index++;
-    }
-    lines++; // en sondaki komut için ekstra bir tane daha, her zaman tutmuyor ama
-    file_index = 0;
-    *ln = lines;
-
-    Token *tokenlist = (Token *)malloc(sizeof(Token) * lines);
+    Token *tokenlist = (Token *)malloc(sizeof(Token));
     int tokenlist_index = 0;
     
     Var *varlist = (Var *)malloc(0);
@@ -46,7 +35,6 @@ Token *parser(const char * file, int *ln){
         buf_index = 0;
 
         int string_reading = 0;
-
         while ( (file[file_index] != ' ' || string_reading) && file[file_index] != '\n' && file[file_index] != '\0')
         {
             buf[buf_index] = file[file_index];
@@ -62,8 +50,6 @@ Token *parser(const char * file, int *ln){
             word[i] = buf[i];
         }
         word[buf_index] = '\0';
-
-        //printf("%s\n", word);
         file_index++;
 
         if (word[buf_index - 1] == '"') // var olan tokenin
@@ -93,7 +79,10 @@ Token *parser(const char * file, int *ln){
             int end_index = 0;
 
             if (word[1] == '-')
-                multby = -1; end_index = 1;
+            {
+                multby = -1; 
+                end_index = 1;
+            }
 
             int *number = (int *)malloc(sizeof(int));
             for (int i = buf_index - 1; i > end_index; i--)
@@ -102,10 +91,7 @@ Token *parser(const char * file, int *ln){
                 multby *= 10;
             }
             int var_index = tokenlist[tokenlist_index - 1].var_count;
-            if (var_index == 0)
-                tokenlist[tokenlist_index - 1].vars = (Var *)malloc(sizeof(Var) * (var_index + 1));
-            else
-                tokenlist[tokenlist_index - 1].vars = (Var *)realloc(tokenlist[tokenlist_index - 1].vars, sizeof(Var) * (var_index + 1));
+            tokenlist[tokenlist_index - 1].vars = (Var *)realloc(tokenlist[tokenlist_index - 1].vars, sizeof(Var) * (var_index + 1));
             tokenlist[tokenlist_index - 1].var_count++;
             tokenlist[tokenlist_index - 1].vars[var_index].ptr = (void *)number;
             tokenlist[tokenlist_index - 1].vars[var_index].type = INT;
@@ -142,23 +128,67 @@ Token *parser(const char * file, int *ln){
             }
 
             int var_index = tokenlist[tokenlist_index - 1].var_count;
-            if (var_index == 0)
-                tokenlist[tokenlist_index - 1].vars = (Var *)malloc(sizeof(Var) * (var_index + 1));
-            else
-                tokenlist[tokenlist_index - 1].vars = (Var *)realloc(tokenlist[tokenlist_index - 1].vars, sizeof(Var) * (var_index + 1));
+            tokenlist[tokenlist_index - 1].vars = (Var *)realloc(tokenlist[tokenlist_index - 1].vars, sizeof(Var) * (var_index + 1));
             tokenlist[tokenlist_index - 1].var_count++;
             tokenlist[tokenlist_index - 1].vars[var_index] = var;
             continue;
-
         }
 
         tokenlist[tokenlist_index].name = word;
+        tokenlist[tokenlist_index].vars = (Var *)malloc(sizeof(Var));
         tokenlist_index++;
-        
+        tokenlist = (Token *)realloc(tokenlist, sizeof(Token) * (tokenlist_index + 1));
+
         if (file[file_index] == '\0') // dosyanın sonu
             break;
 
     }
 
+    *ln = tokenlist_index;
     return tokenlist;
+}
+
+char *to_machinefile(Token * tokenlist, int token_count)
+{
+    char * machine_code = (char *)malloc(sizeof(char));
+    int size_machine = 0;
+    int index = 0;
+    for (int i = 0; i < token_count; i++)
+    {
+
+        Token tkn = tokenlist[i];
+        Var* vars = tkn.vars;
+        int var_count = tkn.var_count;
+
+        // 4 => opcode
+        // 15 => her var için ( 14 + 1 / ' ' + ptr) 
+        int size = (4 + 15 * var_count);
+        char *buf = (char *)malloc(sizeof(char) * (size + 1));
+        size_machine += size + 1;
+        machine_code = (char *)realloc(machine_code, sizeof(char) * size_machine);
+        int opcode = return_opcode(tkn.name);
+
+        sprintf(buf, "%04x", opcode);
+        //printf("%04x ", opcode);
+        buf[4] = ' ';
+
+        for (int j = 0; j < var_count; j++)
+        {
+            if (vars[j].ptr)
+                sprintf(buf + 5 + (j*15), "%p ", vars[j].ptr);
+                //printf(" %p", vars[j].ptr);
+            else if(vars[j].called)
+                sprintf(buf + 5 + (j*15), "%p ", &vars[j].called);
+                //printf(" %p", &vars[j].called);
+        }
+
+        buf[size] = '\n';
+        //printf("%s", buf);
+        sprintf(machine_code + index, "%s", buf);
+        index += size + 1;
+
+        free(buf);
+    }
+    machine_code[size_machine] = '\0';
+    return machine_code;
 }

@@ -155,6 +155,48 @@ void compile(const Token* tokenlist, int token_count)
             continue;
         }
 
+        if (strcmp(token.name, "SUB") == 0)
+        {
+            Var * final;
+            Var * addone;
+            Var * addtwo;
+
+            for(int i = 0; i < varsize; i++)
+            {
+                if(strcmp(varlist[i].called, token.vars[0].called) == 0)
+                    final = &varlist[i];
+            }
+
+            if (token.vars[1].called)
+            {
+                for(int i = 0; i < varsize; i++)
+                {
+                    if(strcmp(varlist[i].called, token.vars[1].called) == 0)
+                        addone = &varlist[i];
+                }
+            }
+            else
+            {
+                addone = &token.vars[1];
+            }
+
+            if (token.vars[2].called)
+            {
+                for(int i = 0; i < varsize; i++)
+                {
+                    if(strcmp(varlist[i].called, token.vars[2].called) == 0)
+                        addtwo = &varlist[i];
+                }
+            }
+            else
+            {
+                addtwo = &token.vars[2];
+            }
+
+            *(int *)final->ptr = *(int *)addone->ptr - *(int *)addtwo->ptr;
+            continue;
+        }
+
         if (strcmp(token.name, "HLT") == 0)
         {
             break;

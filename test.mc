@@ -2,8 +2,11 @@ PRINT "a: "
 GETINT $a
 PRINT "b: "
 GETINT $b
+SET $buff #0
+ADD $buff $a $b
 PRINT "sum: "
-SET $c #0
-ADD $c $a $b
-PRINTLN $c
+PRINTLN $buff
+SUB $buff $a $b
+PRINT "sub: "
+PRINTLN $buff
 HLT

@@ -20,4 +20,13 @@ struct Token
 };
 typedef struct Token Token;
 
+struct Command
+{
+    char * name;
+    int opcode;
+};
+typedef struct Command Command;
+
+int return_opcode(char * name);
+
 #endif
