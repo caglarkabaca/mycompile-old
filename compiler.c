@@ -9,9 +9,12 @@ void compile(const Token* tokenlist, int token_count)
     Var * varlist = (Var *)malloc(0);
     int varsize = 0;
 
-    for (int i = 0; i < token_count; i++)
+    for (int tokenpos = 0; tokenpos < token_count; tokenpos++)
     {
-        Token token = tokenlist[i];
+        Token token = tokenlist[tokenpos];
+
+        if (strcmp(token.name, "HLT") == 0)
+            break;
 
         if (strcmp(token.name, "PRINT") == 0)
         {
@@ -83,6 +86,36 @@ void compile(const Token* tokenlist, int token_count)
             continue;
         }
 
+        if (strcmp(token.name, "GETINT") == 0)
+        {
+            int* data = (int *)malloc(sizeof(int));
+            scanf("%d", data);
+
+            int check = 0;
+
+            for (int i = 0; i < varsize; i++)
+            {
+                if (strcmp(varlist[i].called, token.vars[0].called) == 0)
+                {
+                    check = 1;
+                    varlist[i].type = INT;
+                    varlist[i].ptr = data;
+                    break;
+                }
+            }
+            
+            if (!check)
+            {
+                varsize++;
+                varlist = (Var *)realloc(varlist, sizeof(Var) * varsize);
+                varlist[varsize - 1].called = token.vars[0].called;
+                varlist[varsize - 1].type = INT;
+                varlist[varsize - 1].ptr = data;
+            }
+            
+            continue;
+        }
+
         if (strcmp(token.name, "ADD") == 0)
         {
             Var * final;
@@ -122,36 +155,6 @@ void compile(const Token* tokenlist, int token_count)
             }
 
             *(int *)final->ptr = *(int *)addone->ptr + *(int *)addtwo->ptr;
-            continue;
-        }
-
-        if (strcmp(token.name, "GETINT") == 0)
-        {
-            int* data = (int *)malloc(sizeof(int));
-            scanf("%d", data);
-
-            int check = 0;
-
-            for (int i = 0; i < varsize; i++)
-            {
-                if (strcmp(varlist[i].called, token.vars[0].called) == 0)
-                {
-                    check = 1;
-                    varlist[i].type = INT;
-                    varlist[i].ptr = data;
-                    break;
-                }
-            }
-            
-            if (!check)
-            {
-                varsize++;
-                varlist = (Var *)realloc(varlist, sizeof(Var) * varsize);
-                varlist[varsize - 1].called = token.vars[0].called;
-                varlist[varsize - 1].type = INT;
-                varlist[varsize - 1].ptr = data;
-            }
-            
             continue;
         }
 
@@ -197,10 +200,131 @@ void compile(const Token* tokenlist, int token_count)
             continue;
         }
 
-        if (strcmp(token.name, "HLT") == 0)
+        if (strcmp(token.name, "MUL") == 0)
         {
-            break;
+            Var * final;
+            Var * addone;
+            Var * addtwo;
+
+            for(int i = 0; i < varsize; i++)
+            {
+                if(strcmp(varlist[i].called, token.vars[0].called) == 0)
+                    final = &varlist[i];
+            }
+
+            if (token.vars[1].called)
+            {
+                for(int i = 0; i < varsize; i++)
+                {
+                    if(strcmp(varlist[i].called, token.vars[1].called) == 0)
+                        addone = &varlist[i];
+                }
+            }
+            else
+            {
+                addone = &token.vars[1];
+            }
+
+            if (token.vars[2].called)
+            {
+                for(int i = 0; i < varsize; i++)
+                {
+                    if(strcmp(varlist[i].called, token.vars[2].called) == 0)
+                        addtwo = &varlist[i];
+                }
+            }
+            else
+            {
+                addtwo = &token.vars[2];
+            }
+
+            *(int *)final->ptr = *(int *)addone->ptr * *(int *)addtwo->ptr;
+            continue;
         }
+
+        if (strcmp(token.name, "DIV") == 0)
+        {
+            Var * final;
+            Var * addone;
+            Var * addtwo;
+
+            for(int i = 0; i < varsize; i++)
+            {
+                if(strcmp(varlist[i].called, token.vars[0].called) == 0)
+                    final = &varlist[i];
+            }
+
+            if (token.vars[1].called)
+            {
+                for(int i = 0; i < varsize; i++)
+                {
+                    if(strcmp(varlist[i].called, token.vars[1].called) == 0)
+                        addone = &varlist[i];
+                }
+            }
+            else
+            {
+                addone = &token.vars[1];
+            }
+
+            if (token.vars[2].called)
+            {
+                for(int i = 0; i < varsize; i++)
+                {
+                    if(strcmp(varlist[i].called, token.vars[2].called) == 0)
+                        addtwo = &varlist[i];
+                }
+            }
+            else
+            {
+                addtwo = &token.vars[2];
+            }
+
+            *(int *)final->ptr = *(int *)addone->ptr / *(int *)addtwo->ptr;
+            continue;
+        }
+
+        if (strcmp(token.name, "SETPOS") == 0)
+        {
+            int check = 0;
+            int * current_token_pos = (int *)malloc(sizeof(int));
+            *current_token_pos = tokenpos;
+
+            for (int i = 0; i < varsize; i++)
+            {
+                if (strcmp(varlist[i].called, token.vars[0].called) == 0)
+                {
+                    check = 1;
+                    varlist[i].type = INT;
+                    varlist[i].ptr = (void *)current_token_pos;
+                    break;
+                }
+            }
+            
+            if (!check)
+            {
+            varsize++;
+            varlist = (Var *)realloc(varlist, sizeof(Var) * varsize);
+            varlist[varsize - 1].called = token.vars[0].called;
+            varlist[varsize - 1].type = INT;
+            varlist[varsize - 1].ptr = (void *)current_token_pos;
+            }
+            continue;
+        }
+
+        if (strcmp(token.name, "GOTO") == 0)
+        {
+            Var * pos;
+
+            for(int i = 0; i < varsize; i++)
+            {
+                if(strcmp(varlist[i].called, token.vars[0].called) == 0)
+                    pos = &varlist[i];
+            }
+
+            tokenpos = *(int *)pos->ptr;
+            continue;
+        }        
 
     }
 }
