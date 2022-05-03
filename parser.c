@@ -39,7 +39,7 @@ Token *parser(const char * file, int *ln){
         {
             buf[buf_index] = file[file_index];
             if (file[file_index] == '"')
-                string_reading = 1;
+                string_reading = !string_reading;
             buf_index++;
             file_index++;
         }

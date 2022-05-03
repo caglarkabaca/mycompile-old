@@ -4,15 +4,16 @@
 
 * PRINT "Hello world!"
 * PRINT $var
+* PRINT "Hello " "world!"
 
 * PRINTLN "Hello world!"
 * PRINTLN $var
+* PRINTLN "Hello " "world!"
 
 ### değişken tanımlamak için
 
-* VALID $var !
-* VALID $var 5 !
 
+* SET $var
 * SET $var #10
 * SET $var "Test"
 
@@ -41,10 +42,10 @@
 
 ### döngü olayları
 
-* !!!SETPOS $var
-* !!!GOTO $var
-* !!!GOGT $var $a $b | a > b
-* !!!GOLT $var $a $b | a < b
+* SETPOS $var
+* GOTO $var
+* GOGT $var $a $b | a > b
+* GOLT $var $a $b | a < b
 
 ### programı bitirmek için
 
