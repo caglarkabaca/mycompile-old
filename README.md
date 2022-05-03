@@ -1,5 +1,9 @@
 ! => WIP (ne kadar ! o kadar öncelikli)
 
+### yorum satırı
+
+* ! bu bir yorum satırı
+
 ### ekrana yazı yazdırmak için
 
 * PRINT "Hello world!"
@@ -12,11 +16,14 @@
 
 ### değişken tanımlamak için
 
-
 * SET $var
 * SET $var #10
 * SET $var "Test"
 
+### değişkene yer ayırmak için
+
+* PUSH $var #10 | 10 bytes !
+ 
 ### kullanıcıdan veri almak için
 
 * GETINT $var

@@ -466,5 +466,41 @@ void compile(const Token* tokenlist, int token_count)
             continue;
         }
 
+        if (strcmp(token.name, "PUSH") == 0)
+        {
+            int check = 0;
+
+            for (int i = 0; i < varsize; i++)
+            {
+                if (strcmp(varlist[i].called, token.vars[0].called) == 0)
+                {
+                    check = 1;
+                    varlist[i].ptr = (void *)realloc(varlist[i].ptr, sizeof(char) * *(int *)token.vars[1].ptr );
+                    break;
+                }
+            }
+            
+            if (!check)
+            {
+            varsize++;
+            varlist = (Var *)realloc(varlist, sizeof(Var) * varsize);
+            varlist[varsize - 1].called = token.vars[0].called;
+            varlist[varsize - 1].type = STRING;
+            varlist[varsize - 1].ptr = (void *)malloc(*(int *)token.vars[1].ptr);
+            }
+        }
+
+        if (strcmp(token.name, "GETTXT") == 0)
+        {
+
+            for (int i = 0; i < varsize; i++)
+            {
+                if (strcmp(varlist[i].called, token.vars[0].called) == 0)
+                    scanf("%s", (char *)varlist[i].ptr);
+            }
+            
+            continue;
+        }
+
     }
 }

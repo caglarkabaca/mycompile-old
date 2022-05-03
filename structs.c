@@ -18,6 +18,8 @@
 #define GOTO 10
 #define GOGT 11
 #define GOLT 12
+#define PUSH 13
+#define GETTXT 14
 
 int return_opcode(char * name)
 {
@@ -47,6 +49,10 @@ int return_opcode(char * name)
         return GOGT;
     else if (strcmp(name, "GOLT") == 0)
         return GOLT;
+    else if (strcmp(name, "PUSH") == 0)
+        return PUSH;
+    else if (strcmp(name, "GETTXT") == 0)
+        return GETTXT;
     else
         return -1;
 }

@@ -34,12 +34,23 @@ Token *parser(const char * file, int *ln){
         memset(buf, 0, buf_index);
         buf_index = 0;
 
+        // comment line check
+
         int string_reading = 0;
         while ( (file[file_index] != ' ' || string_reading) && file[file_index] != '\n' && file[file_index] != '\0')
         {
-            buf[buf_index] = file[file_index];
+            if (file[file_index] == '!')
+            {
+                while(file[file_index] != '\n' && file[file_index] != '\0')
+                    file_index++;
+                file_index++;
+            }
+
             if (file[file_index] == '"')
                 string_reading = !string_reading;
+        
+            buf[buf_index] = file[file_index];
+
             buf_index++;
             file_index++;
         }
