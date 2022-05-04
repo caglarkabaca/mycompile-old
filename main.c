@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
         FILE * fp = fopen(argv[3], "w");
         fwrite(machine_code, 1, strlen(machine_code), fp);
         fclose(fp);
+        printf(".. done\n");
         free(tokenlist);
     }
 
