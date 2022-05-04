@@ -1,9 +1,26 @@
 {
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
     "tasks": [
         {
+            "label": "build",
+            "type": "shell",
+            "command": "gcc-7",
+            "args": [
+                "-o",
+                "main",
+                "main.c",
+                "parser.c",
+                "compiler.c",
+                "structs.c"
+            ],
+            "group": "build"
+        },
+        {
             "type": "cppbuild",
-            "label": "C/C++: gcc etkin dosyayı derle",
-            "command": "/usr/bin/gcc",
+            "label": "C/C++: gcc-7 etkin dosyayı derle",
+            "command": "/usr/local/bin/gcc-7",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
@@ -17,12 +34,8 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "Hata Ayıklayıcısı tarafından oluşturulan görev."
+            "group": "build",
+            "detail": "derleyici: /usr/local/bin/gcc-7"
         }
-    ],
-    "version": "2.0.0"
+    ]
 }

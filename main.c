@@ -8,11 +8,12 @@
 
 int main(int argc, char* argv[])
 {
+    printf("init..");
     if (argc == 3 && (strcmp(argv[1], "--compile") == 0))
     {
         const char * file = read_file(argv[2]);
 
-        int * ln;
+        int * ln = (int *)malloc(sizeof(int));
         Token *tokenlist = parser(file, ln);
 
         printf("------output------\n");

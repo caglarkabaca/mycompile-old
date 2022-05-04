@@ -1,6 +1,5 @@
 {
-    "C_Cpp.errorSquiggles": "Disabled",
     "files.associations": {
-        "parser.h": "c"
+        "stdlib.h": "c"
     }
 }
